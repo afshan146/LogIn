@@ -53,4 +53,58 @@ app.get("/", function (req, res) {
   res.sendFile(path.join(__dirname, "build", "index.html"));
 });
 
+app.post("/login", (req, res) => {
+  let username = req.body.username;
+  let password = req.body.password;
+  console.log("abcd");
+  username = username.toLowerCase();
+
+  if (username.length > 12 || password.length > 12) {
+    res.json({
+      success: false,
+      msg: "An error occured, please try again",
+    });
+    return;
+  }
+
+  let cols = [username];
+  db.query(
+    "SELECT * from myuser WHERE username = ? LIMIT 1",
+    cols,
+    (err, data, fields) => {
+      if (err) {
+        res.json({
+          success: false,
+          msg: "An error occured, please try again",
+        });
+        return false;
+      }
+
+      if (data && data.length === 1) {
+        bcrypt.compare(password, data[0].password_, (bcryptErr, verified) => {
+          if (verified) {
+            req.session.userID = data[0].id;
+
+            res.json({
+              success: true,
+              usename: data[0].username,
+            });
+            return;
+          } else {
+            res.json({
+              success: false,
+              msg: "Invalid password",
+            });
+          }
+        });
+      } else {
+        res.json({
+          success: false,
+          msg: "User not found, please try again",
+        });
+      }
+    }
+  );
+});
+
 app.listen(3000);

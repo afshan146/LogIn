@@ -5,7 +5,13 @@ import LoginForm from "./LoginForm";
 import SubmitButton from "./SubmitButton";
 import "./App.css";
 
+import { AgGridReact } from "ag-grid-react";
+import ColDefinition from "./store/ColDef";
+import "ag-grid-community/dist/styles/ag-theme-balham-dark.css";
+import "ag-grid-community/dist/styles/ag-grid.css";
+
 class App extends React.Component {
+
   async componentDidMount() {
     try {
       let res = await fetch("./isLoggedIn", {
@@ -22,6 +28,17 @@ class App extends React.Component {
         UserStore.loading = false;
         UserStore.isLoggedIn = true;
         UserStore.username = result.username;
+        UserStore.userPriority = result.userPriority;
+        //validate ag-grid according to user priority
+        if (UserStore.userPriority === 1) {
+          ColDefinition.defaultColDef.editable = true;
+          ColDefinition.columnDefs[0].checkboxSelection = true;
+        }
+        else if (UserStore.userPriority === 2) {
+          ColDefinition.defaultColDef.editable = false;
+          ColDefinition.columnDefs[0].checkboxSelection = false;
+        }
+        AgGridReact.gridApi.refreshCells();
       } else {
         UserStore.loading = false;
         UserStore.isLoggedIn = false;
@@ -70,6 +87,22 @@ class App extends React.Component {
                 disabled={false}
                 onClick={() => this.doLogout()}
               />
+
+              <div
+                className="ag-theme-balham-dark"
+                style={{
+                  width: '95%',
+                  height: 600,
+                }}
+              >
+                <AgGridReact
+                  columnDefs={ColDefinition.columnDefs}
+                  rowData={ColDefinition.rowData}
+                  defaultColDef={ColDefinition.defaultColDef}
+                  rowSelection="multiple"
+                  onGridReady={(params) => (this.gridApi = params.api)}
+                />
+              </div>
             </div>
           </div>
         );
@@ -78,6 +111,7 @@ class App extends React.Component {
         <div className="app">
           <div className="container">
             <LoginForm />
+
           </div>
         </div>
       );

@@ -9,7 +9,7 @@ class Router {
 
   login(app, db) {
     console.log("abcd");
-    app.post("./login", (req, res) => {
+    app.post("/login", (req, res) => {
       let username = req.body.username;
       let password = req.body.password;
       console.log("abcd");
@@ -46,7 +46,8 @@ class Router {
 
                   res.json({
                     success: true,
-                    usename: data[0].username,
+                    username: data[0].firstname,
+                    userPriority: data[0].privilege,
                   });
                   return;
                 } else {
@@ -70,7 +71,7 @@ class Router {
 
   logout(app, db) {
     console.log("abcd1");
-    app.post("./logout", (req, res) => {
+    app.post("/logout", (req, res) => {
       if (req.session.userID) {
         req.session.destroy();
         res.json({
@@ -89,18 +90,18 @@ class Router {
 
   isLoggedIn(app, db) {
     console.log("abcd2");
-    app.post("./isLoggedIn", (req, res) => {
+    app.post("/isLoggedIn", (req, res) => {
       if (req.session.userID) {
         let cols = [req.session.userID];
-        console.log("abcd2");
         db.query(
-          "SELECT * from user WHERE id= ? LIMIT 1",
+          "SELECT * from myuser WHERE id= ? LIMIT 1",
           cols,
           (err, data, field) => {
             if (data && data.length === 1) {
               res.json({
                 success: true,
-                username: data[0].username,
+                username: data[0].firstname,
+                userPriority: data[0].privilege,
               });
               return true;
             } else {

@@ -6,6 +6,7 @@ class UserStore {
       loading: true,
       isLoggedIn: false,
       username: "",
+      userPriority: 1
     });
   }
 }

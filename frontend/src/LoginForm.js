@@ -3,6 +3,9 @@ import InputField from "./InputField";
 import SubmitButton from "./SubmitButton";
 import UserStore from "./store/UserStore";
 
+import ColDefinition from "./store/ColDef";
+import { AgGridReact } from "ag-grid-react";
+
 class LoginForm extends React.Component {
   constructor(props) {
     super(props);
@@ -59,6 +62,18 @@ class LoginForm extends React.Component {
       if (result && result.success) {
         UserStore.isLoggedIn = true;
         UserStore.username = result.username;
+        UserStore.userPriority = result.userPriority;
+
+        //validate ag-grid according to user priority
+        if (UserStore.userPriority === 1) {
+          ColDefinition.defaultColDef.editable = true;
+          ColDefinition.columnDefs[0].checkboxSelection = true;
+        }
+        else if (UserStore.userPriority === 2) {
+          ColDefinition.defaultColDef.editable = false;
+          ColDefinition.columnDefs[0].checkboxSelection = false;
+        }
+        AgGridReact.gridApi.refreshCells();
       } else if (result && result.success === false) {
         this.resetForm();
         alert(result.msg);
