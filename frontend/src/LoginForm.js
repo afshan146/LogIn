@@ -60,7 +60,7 @@ class LoginForm extends React.Component {
 
       let result = await res.json();
       if (result && result.success) {
-        UserStore.isLoggedIn = true;
+
         UserStore.username = result.username;
         UserStore.userPriority = result.userPriority;
 
@@ -73,7 +73,29 @@ class LoginForm extends React.Component {
           ColDefinition.defaultColDef.editable = false;
           ColDefinition.columnDefs[0].checkboxSelection = false;
         }
-        AgGridReact.gridApi.refreshCells();
+        try {
+          let resData = await fetch("./getData", {
+            method: "post",
+            headers: {
+              "Accept": "application/json",
+              "Content-Type": "application/json",
+            },
+          });
+
+          let resultData = await resData.json();
+          if (resultData && resultData.success) {
+            ColDefinition.rowData = resultData.rowData;
+            console.log("data copied");
+            alert(ColDefinition.rowData);
+          } else if (resultData && resultData.success === false) {
+            alert(resultData.msg);
+          }
+        }
+        catch (e) {
+          console.log(e);
+        }
+        //update form
+        UserStore.isLoggedIn = true;
       } else if (result && result.success === false) {
         this.resetForm();
         alert(result.msg);

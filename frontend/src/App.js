@@ -25,8 +25,7 @@ class App extends React.Component {
       let result = await res.json();
 
       if (result && result.success) {
-        UserStore.loading = false;
-        UserStore.isLoggedIn = true;
+
         UserStore.username = result.username;
         UserStore.userPriority = result.userPriority;
         //validate ag-grid according to user priority
@@ -38,7 +37,10 @@ class App extends React.Component {
           ColDefinition.defaultColDef.editable = false;
           ColDefinition.columnDefs[0].checkboxSelection = false;
         }
-        AgGridReact.gridApi.refreshCells();
+        //update form status
+        UserStore.loading = false;
+        UserStore.isLoggedIn = true;
+
       } else {
         UserStore.loading = false;
         UserStore.isLoggedIn = false;
@@ -91,6 +93,7 @@ class App extends React.Component {
               <div
                 className="ag-theme-balham-dark"
                 style={{
+                  padding: 10,
                   width: '95%',
                   height: 600,
                 }}

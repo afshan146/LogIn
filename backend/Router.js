@@ -2,17 +2,41 @@ const bcrypt = require("bcrypt");
 
 class Router {
   constructor(app, db) {
+    this.getData(app, db);
     this.login(app, db);
     this.logout(app, db);
     this.isLoggedIn(app, db);
   }
 
+  getData(app, db) {
+    console.log("query data");
+
+    app.post("/getData", (req, res) => {
+      console.log("processing http request");
+
+      db.query("select * from matching_file_temp", (err, data, fields) => {
+        if (err) {
+          res.json({
+            success: false,
+            msg: "An error occured, cannot fetch data",
+          });
+          return false;
+        }
+        if (data && data.length > 1) {
+          res.json({
+            success: true,
+            rowData: data,
+          });
+        }
+      });
+    });
+  }
+
   login(app, db) {
-    console.log("abcd");
     app.post("/login", (req, res) => {
       let username = req.body.username;
       let password = req.body.password;
-      console.log("abcd");
+
       username = username.toLowerCase();
 
       if (username.length > 12 || password.length > 12) {
@@ -70,14 +94,12 @@ class Router {
   }
 
   logout(app, db) {
-    console.log("abcd1");
     app.post("/logout", (req, res) => {
       if (req.session.userID) {
         req.session.destroy();
         res.json({
           success: true,
         });
-        console.log("abcd1");
         return true;
       } else {
         res.json({

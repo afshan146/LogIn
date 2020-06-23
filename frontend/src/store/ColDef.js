@@ -3,6 +3,7 @@ import { extendObservable } from "mobx";
 class ColDefinition {
     constructor() {
         extendObservable(this, {
+            dataRetrieved: false,
             columnDefs: [
                 {
                     headerName: "role_name",
@@ -99,7 +100,7 @@ class ColDefinition {
                 minWidth: 110,
                 sortable: true,
                 filter: true,
-                editable: false,
+                editable: true,
                 resizable: true,
             },
             rowData: [
